@@ -1,0 +1,10 @@
+{
+  "name": "Omnibox HP",
+  "description" : "To use, type 'hp' plus a search term into the Omnibox.",
+  "version": "0.1",
+  "background": {
+    "scripts": ["background.js"]
+  },
+  "omnibox": { "keyword" : "hp" },
+  "manifest_version": 2
+}
