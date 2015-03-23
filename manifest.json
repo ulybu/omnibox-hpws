@@ -1,10 +1,11 @@
 {
   "name": "HP Auto-Complete",
   "description" : "Too use, type 'hp' plus a search term into the Omnibox.",
-  "version": "0.1",
+  "version": "0.2",
   "background": {
     "scripts": ["background.js"]
   },
+  "permissions": ["tabs"],
   "omnibox": { "keyword" : "hp" },
   "manifest_version": 2
 }

@@ -1,7 +1,6 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style license that can be
-// found in the LICENSE file.
-
+/*
+Author: Ulysse Prygiel
+*/
 var domains= {
 		jira: "https://jira.hpsvcs.com",
 	  fisheye: "https://fisheye.hpsvcs.com"
@@ -37,7 +36,6 @@ function getUrl(site,text,opts){
 	url = url.replace('$id', text);
 	return url;
 }
-console.log("loading")
 chrome.omnibox.setDefaultSuggestion({
 	description: userMessages.keyNoValid
 });
@@ -59,7 +57,18 @@ chrome.omnibox.onInputChanged.addListener(
 
 // This event is fired with the user accepts the input in the omnibox.
 chrome.omnibox.onInputEntered.addListener(
+	// user accepts
   function(text) {
-    console.log('inputEntered: ' + text);
-    //alert('You just typed "' + text + '"');
-  });
+		var currentIndex;
+		chrome.tabs.query({active:true},function(tabs){
+			// got the active tab
+			currentIndex = tabs[0].index
+			// create new tab next to the current one
+			chrome.tabs.create({
+      		url: text,
+      		index: currentIndex + 1,
+      		active: true
+				}, function(){}
+			);
+		});
+});
