@@ -1,7 +1,7 @@
 {
   "name": "HP Auto-Complete",
   "description" : "Too use, type 'hp' plus a search term into the Omnibox.",
-  "version": "0.2",
+  "version": "0.3",
   "background": {
     "scripts": ["background.js"]
   },

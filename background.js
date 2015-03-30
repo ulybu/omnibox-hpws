@@ -7,7 +7,8 @@ var domains= {
 	}
 	, paths = {
 		jira: "/browse/$id",
-		fisheye: "/cru/$id"
+		fisheye: "/cru/$id",
+		searchJiraOnFisjeye: "/qsearch?q=$id&t=5&project="
 	}
 	, defaultKeys = {
 		jira: "CS-$NUM",
@@ -18,17 +19,18 @@ var domains= {
 		fisheye: /^CR/
 	}
 	, userMessages = {
-		keyNoValid: "The key isn't valid, keep typing",
+		keyNoValid: "The key isn't valid, keep typing or do a search",
 		keyValid: "Looks like a valid key, select a site or keep typing"
 	}
 ;
 function getUrl(site,text,opts){
 	var baseUrl = domains[site]
-		, path = paths[site]
-	  , defaultKey = defaultKeys[site]
+		, opts = opts||{}
+		, path = paths[opts.path||site]
+		, defaultKey = defaultKeys[opts.defaultKey||site]
 		, keyRegexp = keyRegexps[site]
 		, url
-	  ;
+	 	;
 	if( ! keyRegexp.test(text) ) {
 		text = defaultKey.replace('$NUM',text);
 	}
@@ -42,17 +44,29 @@ chrome.omnibox.setDefaultSuggestion({
 chrome.omnibox.onInputChanged.addListener(
   function(text, suggest) {
 		var validRe = /^\d+$|^[a-zA-Z]{2,4}-\d+$/
+			, isValidKey = validRe.test(text)
 			, defaultSuggestion
+			, suggestions = []
 			;
-    suggest([
-      {content: getUrl('jira',text), description: "JIRA"},
-      {content: getUrl('fisheye',text), description: "Review CRU"}
-    ]);
-		defaultSuggestion = userMessages[validRe.test(text) ? 'keyValid' : 'keyNoValid'];
-		console.log(defaultSuggestion)
-		chrome.omnibox.setDefaultSuggestion({
-			description: defaultSuggestion
-		});
+
+	defaultSuggestion = userMessages[isValidKey ? 'keyValid' : 'keyNoValid'];
+	console.log(defaultSuggestion)
+	chrome.omnibox.setDefaultSuggestion({
+		description: defaultSuggestion
+	});
+
+	suggestions.push({
+      	content: getUrl('fisheye',text,
+	      		{path:'searchJiraOnFisjeye',
+	      		defaultKey:'jira'}
+	      	),
+      	description: "Search a Review"
+    });
+    if (isValidKey) {
+    	suggestions.unshift({content: getUrl('fisheye',text), description: "Review CRU"});
+    	suggestions.unshift({content: getUrl('jira',text), description: "JIRA"});
+    }
+    suggest(suggestions);
   });
 
 // This event is fired with the user accepts the input in the omnibox.
